@@ -1,0 +1,68 @@
+project:
+  slug: mixed-generated
+  title: Mixed Generated Pipeline
+  date: "2026-03-21"
+
+speaker:
+  name: Neutral Guide
+  images:
+    - ../shared/assets/speaker.svg
+  mode: single
+
+locales:
+  ja:
+    theme:
+      background: "#111827"
+      accent: "#f97316"
+      text: "#ffffff"
+    clips:
+      - id: opener
+        source: generated
+        text: 本日のアップデートをお届けします。
+        ttsSpeaker: 1
+        durationSeconds: 2
+        overlayText: Spring Launch
+        overlayStyle: title
+      - id: showcase
+        source: video
+        asset: ../shared/assets/promo.mp4
+        durationSeconds: 2
+        hasAudio: false
+      - id: endcard
+        source: image
+        asset: ../shared/assets/endcard.svg
+        durationSeconds: 1.5
+        overlayText: example.com
+        overlayStyle: endcard
+  en:
+    theme:
+      background: "#0f172a"
+      accent: "#38bdf8"
+      text: "#ffffff"
+    clips:
+      - id: opener
+        source: generated
+        text: Here is the latest update from the team.
+        ttsSpeaker: 1
+        durationSeconds: 2
+        overlayText: Spring Launch
+        overlayStyle: title
+      - id: endcard
+        source: image
+        asset: ../shared/assets/endcard.svg
+        durationSeconds: 1.5
+        overlayText: example.com
+        overlayStyle: endcard
+
+render:
+  aspectRatios: ["16:9", "9:16"]
+  fps: 30
+  outputDir: ../../output
+
+generation:
+  model: v5.6
+  quality: 1080p
+  upscale: true
+  ambientSound: null
+  prompt:
+    base: A talking character derived from the provided character image, speaking directly to camera in a photoreal live-action environment with realistic depth and polished cinematic lighting

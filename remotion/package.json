@@ -1,0 +1,30 @@
+{
+  "name": "pixverse-character-pipeline",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "remotion studio src/index.ts",
+    "pipeline:validate": "./bin/pipeline validate",
+    "pipeline:plan": "./bin/pipeline plan",
+    "pipeline:run": "./bin/pipeline run",
+    "pipeline:render": "./bin/pipeline render",
+    "test": "node --import tsx --test src/test/*.test.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@remotion/media": "4.0.373",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "remotion": "4.0.373",
+    "yaml": "^2.8.2"
+  },
+  "devDependencies": {
+    "@remotion/cli": "4.0.373",
+    "@types/node": "^25.5.0",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3"
+  }
+}

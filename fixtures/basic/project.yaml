@@ -1,0 +1,44 @@
+project:
+  slug: local-smoke
+  title: Local Asset Smoke Test
+  date: "2026-03-21"
+
+speaker:
+  name: Neutral Guide
+  images:
+    - ../shared/assets/speaker.svg
+  mode: single
+
+locales:
+  en:
+    theme:
+      background: "#0f172a"
+      accent: "#38bdf8"
+      text: "#ffffff"
+    clips:
+      - id: intro
+        source: video
+        asset: ../shared/assets/promo.mp4
+        durationSeconds: 2
+        overlayText: Product Update
+        overlayStyle: title
+        hasAudio: false
+      - id: endcard
+        source: image
+        asset: ../shared/assets/endcard.svg
+        durationSeconds: 1.5
+        overlayText: example.com
+        overlayStyle: endcard
+
+render:
+  aspectRatios: ["16:9"]
+  fps: 30
+  outputDir: ../../output
+
+generation:
+  model: v5.6
+  quality: 1080p
+  upscale: false
+  ambientSound: null
+  prompt:
+    base: A professional talking character speaking directly to camera

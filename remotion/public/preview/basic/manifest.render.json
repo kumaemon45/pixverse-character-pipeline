@@ -1,0 +1,39 @@
+{
+  "projectSlug": "preview",
+  "language": "en",
+  "aspectRatio": "16:9",
+  "fps": 30,
+  "width": 1920,
+  "height": 1080,
+  "durationInFrames": 240,
+  "speakerImage": "preview/basic/assets/speaker.svg",
+  "bgm": null,
+  "bgmVolume": 0.15,
+  "theme": {
+    "background": "#0f172a",
+    "accent": "#38bdf8",
+    "text": "#ffffff"
+  },
+  "cuts": [
+    {
+      "id": "intro",
+      "startFrame": 0,
+      "durationInFrames": 150,
+      "videoSrc": null,
+      "imageSrc": "preview/basic/assets/speaker.svg",
+      "overlayText": "Preview Template",
+      "overlayStyle": "title",
+      "hasAudio": false
+    },
+    {
+      "id": "endcard",
+      "startFrame": 150,
+      "durationInFrames": 90,
+      "videoSrc": null,
+      "imageSrc": "preview/basic/assets/endcard.svg",
+      "overlayText": "example.com",
+      "overlayStyle": "endcard",
+      "hasAudio": false
+    }
+  ]
+}

@@ -1,0 +1,36 @@
+[CLI Feedback/Skill Submission] Takamasa - PixVerse Character Pipeline
+
+Hi Naomi,
+
+I’m sharing a PixVerse CLI workflow / skill submission called “PixVerse Character Pipeline”.
+
+It turns a single YAML config into multilingual character videos, with a strong focus on converting a character image into a talking character scene inside a photoreal, live-action-style background. PixVerse CLI handles generated clips, and Remotion handles final rendering. The workflow is designed for terminal-first creators and AI agent environments such as OpenClaw-style automation.
+
+Highlights:
+- agent-friendly commands: validate / plan / run / render
+- character-image-to-live-action-scene generation as the main creative use case
+- neutral YAML schema with legacy config compatibility
+- support for mixed generated, video, and image clips
+- multi-locale and multi-aspect-ratio batch execution
+- deterministic manifests and output structure for automation
+- local smoke-test path and dry-run support
+
+Repo summary:
+- README includes the workflow and config model
+- SKILL.md describes the reusable agent skill
+- fixtures cover local render smoke, dry-run planning, and legacy compatibility
+
+Validated locally with:
+- typecheck
+- automated tests
+- local render smoke path
+
+Included in this submission:
+- repo link or zip: <add link or attachment note>
+- sample output: <add MP4 link or attachment note>
+- terminal screenshot: <optional link or attachment note>
+
+I’d be happy to share more details, generated outputs, or discuss how this could fit advanced PixVerse skills for agent workflows.
+
+Best,
+Takamasa

@@ -1,0 +1,41 @@
+project:
+  slug: legacy-compat-check
+  title: Legacy Compat Check
+  date: "2026-03-21"
+
+speaker:
+  name: Neutral Guide
+  images:
+    - ../shared/assets/speaker.svg
+  mode: single
+
+locales:
+  ja:
+    theme:
+      background: "#0a0a0a"
+      accent: "#FF6B35"
+      text: "#ffffff"
+    bgm: null
+    bgmVolume: 0.15
+    clips:
+      - id: primary
+        source: generated
+        text: これは互換性テスト用の原稿です。
+        ttsSpeaker: 1
+        durationSeconds: 5
+        overlayText: ""
+        overlayStyle: none
+        hasAudio: true
+
+render:
+  aspectRatios: ["16:9", "9:16"]
+  fps: 30
+  outputDir: ../../output
+
+generation:
+  model: v5.6
+  quality: 1080p
+  upscale: true
+  ambientSound: null
+  prompt:
+    base: A professional talking character speaking directly to camera

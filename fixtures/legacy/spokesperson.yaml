@@ -1,0 +1,27 @@
+speaker:
+  name: Neutral Guide
+  images:
+    - ../shared/assets/speaker.svg
+  mode: single
+
+announcement:
+  date: "2026-03-21"
+  topic: Legacy Compat Check
+
+scripts:
+  ja:
+    text: これは互換性テスト用の原稿です。
+    audio_mode: tts
+    tts_speaker: 1
+
+output:
+  aspect_ratios: ["16:9", "9:16"]
+  model: v5.6
+  quality: 1080p
+  duration: 5
+  upscale: true
+  ambient_sound: null
+  dest: ../../output
+
+prompt:
+  base: A professional talking character speaking directly to camera

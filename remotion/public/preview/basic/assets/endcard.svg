@@ -1,0 +1,13 @@
+<svg width="1080" height="1080" viewBox="0 0 1080 1080" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1080" height="1080" fill="#111827"/>
+  <rect x="90" y="90" width="900" height="900" rx="48" fill="#1F2937" stroke="#38BDF8" stroke-width="6"/>
+  <text x="540" y="420" text-anchor="middle" fill="#F8FAFC" font-size="108" font-family="Helvetica, Arial, sans-serif">
+    Example
+  </text>
+  <text x="540" y="540" text-anchor="middle" fill="#CBD5E1" font-size="56" font-family="Helvetica, Arial, sans-serif">
+    preview template
+  </text>
+  <text x="540" y="720" text-anchor="middle" fill="#38BDF8" font-size="72" font-family="Helvetica, Arial, sans-serif">
+    example.com
+  </text>
+</svg>
