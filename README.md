@@ -1,148 +1,115 @@
 # PixVerse Character Pipeline
 
-[English README](./README.en.md)
+[日本語](./README.ja.md)
 
-このリポジトリは、CLI を人が直接叩くための説明書というより、AI エージェントに自然言語で依頼して使うためのパイプラインです。  
-ユーザーは「何を作りたいか」を自然文で伝え、エージェントはそれを `project.yaml` に正規化し、PixVerse と Remotion で最終動画まで実行します。
+This repository is an agent-first pipeline for generating character videos. Rather than running CLI commands directly, you describe what you want in natural language, and the AI agent normalizes your request into `project.yaml`, then drives PixVerse and Remotion to produce the final MP4.
 
-## まずどう頼むか
+## What It Does
 
-AI エージェントへの入口は、コマンドではなく依頼文です。
+- Turn a character image into a talking character video placed in a photoreal, live-action-style environment
+- Batch-process projects from `project.yaml` across multiple locales and aspect ratios
+- Mix `generated | video | image` clips in the same timeline
+- Turn PixVerse outputs into `manifest.render.json` files and final `character.mp4` renders
+- Accept legacy `spokesperson.yaml` as a backward-compatible input format
 
-たとえば次のように頼めます。
+## How to Ask the Agent
+
+The entry point is a natural-language request, not a command.
 
 ```text
-このキャラ画像から、日本語と英語の案内動画を作って。
-背景は実写っぽいスタジオで、16:9 と 9:16 の両方ほしい。
-まずは dry-run で計画だけ見せて。
+Create a Japanese and English announcement video from this character image.
+Use a photoreal studio background, both 16:9 and 9:16.
+Show me the dry-run plan first.
 ```
 
 ```text
-このキャラを使って、春キャンペーンの短い告知動画を作って。
-冒頭は PixVerse 生成、最後は手元の endcard.png を使って。
-BGM は assets/bgm.mp3 を使ってください。
+Make a short promo video for a spring campaign using this character.
+First clip is PixVerse-generated, last clip uses my endcard.png.
+Use assets/bgm.mp3 for background music.
 ```
 
 ```text
-この画像を元に、縦動画の SNS 用キャラクター動画を作って。
-英語だけでいいです。実写背景は都会のオフィス風で。
+Generate a vertical SNS character video from this image, English only.
+Urban office-style photoreal background.
 ```
 
-```text
-既存の spokesperson.yaml を読み込んで、今の project.yaml 形式で実行して。
-最終的に render までやって。
+If information is missing, the agent will ask follow-up questions in this order:
+
+1. Project name and date
+2. Character image path(s)
+3. Target locales
+4. Clip composition per locale
+5. Aspect ratios
+6. Background style / prompt direction
+
+The goal is to build a valid `project.yaml`, then execute the pipeline.
+
+## Agent Execution Flow
+
+1. Normalize the natural-language request into `project.yaml`
+2. Load `project.yaml` (or legacy `spokesperson.yaml`)
+3. `validate` the config
+4. `plan` to confirm variant and job counts
+5. `run --dry-run` if the user wants to review first
+6. `run` for full execution (PixVerse generation through final render)
+7. `render` for configs using only local `video` / `image` clips
+
+## Setup
+
+### 1. PixVerse CLI
+
+Prerequisites:
+- Node.js 20+
+- PixVerse account with active subscription
+
+```bash
+npm install -g pixverse
+pixverse --version
 ```
 
-## AI エージェントへの依頼仕様
+Or use `npx pixverse` to avoid global install.
 
-エージェントは、自然言語の依頼から次の情報を解釈または確認して実行します。
+### 2. Login
 
-- `project`
-  - 案件名
-  - 日付
-  - slug
-- `speaker`
-  - キャラ名
-  - キャラ画像パス
-  - `single` または `reference`
-- `locales`
-  - 言語ごとの clip 構成
-  - テーマ色
-  - BGM
-- `clips`
-  - `generated | video | image`
-  - クリップ順
-  - テキスト、音声、素材パス
-  - オーバーレイ文言
-- `render`
-  - アスペクト比
-  - FPS
-  - 出力先
-- `generation`
-  - PixVerse モデル
-  - 品質
-  - upscale の有無
-  - 実写背景の雰囲気を決める prompt
-
-## エージェントが足りない情報を聞くとき
-
-依頼文だけで不足がある場合、エージェントは次の順で短く確認します。
-
-1. 案件名と日付
-2. キャラ画像パス
-3. 生成したい言語
-4. 各言語の clip 構成
-5. アスペクト比
-6. 実写背景の方向性
-
-確認のゴールは、最終的に `project.yaml` を組める状態にすることです。
-
-## エージェントの実行ルール
-
-このリポを使う AI エージェントは、基本的に次の順で動きます。
-
-1. 自然言語の依頼を `project.yaml` に正規化する
-2. `project.yaml` または legacy の `spokesperson.yaml` を読み込む
-3. `validate` で検証する
-4. `plan` で job 数と variant 数を確認する
-5. ユーザーが確認優先なら `run --dry-run` を使う
-6. 実行許可があるなら `run` で PixVerse 生成から最終 render まで進める
-7. ローカル素材だけのときは `render` を使う
-
-シェルの Node / PATH 解決が不安定な環境では、`pnpm pipeline:*` ではなく `./bin/pipeline` を正式入口として使います。
-
-## 依頼から実行までの例
-
-### 例1: まず計画だけ見たい
-
-ユーザー:
-
-```text
-このキャラ画像から、実写背景の日本語・英語動画を作って。
-16:9 と 9:16 の両方ほしい。まずは dry-run で。
+```bash
+pixverse auth login
 ```
 
-エージェント:
+The CLI displays a URL and code. Authenticate in your browser; the token is saved to `~/.pixverse/` (valid ~30 days).
 
-- 不足情報があれば追加で聞く
-- `project.yaml` を作る
-- `./bin/pipeline validate`
-- `./bin/pipeline plan`
-- `./bin/pipeline run --dry-run`
-- 出力予定の variant と manifest を報告する
-
-### 例2: ローカル素材だけで render したい
-
-ユーザー:
-
-```text
-この動画素材と endcard 画像をつないで、英語の 16:9 を 1 本だけ出して。
-PixVerse 生成はなしで。
+```bash
+pixverse auth status
+pixverse account info
 ```
 
-エージェント:
+### 3. Install Dependencies
 
-- `video` / `image` clip の `project.yaml` を組む
-- `./bin/pipeline validate`
-- `./bin/pipeline render --lang en --ratio 16:9`
-
-### 例3: 旧 config をそのまま使いたい
-
-ユーザー:
-
-```text
-fixtures/legacy/spokesperson.yaml を使って render して。
+```bash
+cd remotion
+pnpm install
 ```
 
-エージェント:
+Ensure `pixverse` is on PATH, or set `PIXVERSE_BIN=/path/to/pixverse`.
 
-- legacy config を読み込む
-- 内部で `project.yaml` 相当へ正規化する
-- 通常の pipeline と同じ手順で実行する
+## Main Commands
 
-## `project.yaml` の意味
+```bash
+cd remotion
 
-自然言語の依頼は、最終的に次のような構造へ落ちます。
+./bin/pipeline validate --config ../fixtures/generated/project.yaml
+./bin/pipeline plan --config ../fixtures/generated/project.yaml
+./bin/pipeline run --config ../fixtures/generated/project.yaml --dry-run
+./bin/pipeline render --config ../fixtures/basic/project.yaml --lang en --ratio 16:9
+```
+
+- `validate`: normalize and validate config input
+- `plan`: inspect variant counts and job counts
+- `run`: PixVerse generation → render manifests → final MP4s
+- `render`: render a single variant using only local clips
+
+`pnpm pipeline:*` is available as a convenience alias. Prefer `./bin/pipeline` when shell PATH resolution is unreliable.
+
+## `project.yaml` Shape
 
 ```yaml
 project:
@@ -191,11 +158,9 @@ generation:
     base: A talking character derived from the provided character image, speaking directly to camera in a photoreal live-action environment with realistic depth and polished cinematic lighting
 ```
 
-PixVerse 側では `generation.prompt.base` / `generation.prompt.perRatio` を使って、キャラ画像から実写背景込みのシーンを生成します。
+PixVerse uses `prompt.base` / `prompt.perRatio` to turn the input character image into a generated scene. The live-action background look is prompt-driven and can be tuned per project or per aspect ratio.
 
-## 出力
-
-`run` の結果は次の構成で出ます。
+## Output Layout
 
 ```text
 output/<project-slug>/<run-id>/
@@ -206,84 +171,13 @@ output/<project-slug>/<run-id>/
     assets/*
 ```
 
-- `manifest.json`
-  - batch 全体の要約
-- `manifest.render.json`
-  - Remotion に渡す variant 単位の manifest
-- `character.mp4`
-  - 最終動画
-
-Remotion 用の staging は `remotion/public/.pipeline/` に自動生成されます。
-
-## セットアップ
-
-### 1. PixVerse CLI を準備する
-
-PixVerse CLI を使う前に、次を満たしておく必要があります。
-
-- Node.js 20 以上
-- PixVerse アカウント
-- 有効な PixVerse の subscription
-
-PixVerse CLI は Web と同じ credit を使います。大量実行の前に、残クレジット確認まで含めてセットアップしておくのが前提です。
-
-インストール:
-
-```bash
-npm install -g pixverse
-pixverse --version
-```
-
-グローバル install を避けたい場合は `npx pixverse` でも動かせます。
-
-### 2. ログインする
-
-```bash
-pixverse auth login
-```
-
-- CLI が URL とコードを表示します
-- ブラウザで認証すると、token は `~/.pixverse/` に保存されます
-- token の有効期間は通常 30 日です
-
-ログイン確認と credit 確認:
-
-```bash
-pixverse auth status
-pixverse account info
-```
-
-### 3. このリポの依存を入れる
-
-```bash
-cd remotion
-pnpm install
-```
-
-PixVerse を使う場合は `pixverse` を PATH 上に置くか、`PIXVERSE_BIN=/path/to/pixverse` を設定します。  
-すでに `pixverse` コマンドが通っていれば、そのままこのリポから利用できます。
-
-## CLI を直接使いたいとき
-
-人が手で確認したい場合は、次のコマンドも使えます。
-
-```bash
-cd remotion
-
-./bin/pipeline validate --config ../fixtures/generated/project.yaml
-./bin/pipeline plan --config ../fixtures/generated/project.yaml
-./bin/pipeline run --config ../fixtures/generated/project.yaml --dry-run
-./bin/pipeline render --config ../fixtures/basic/project.yaml --lang en --ratio 16:9
-```
+Remotion staging assets are generated automatically under `remotion/public/.pipeline/`.
 
 ## Fixtures / Tests
 
-- `fixtures/basic/project.yaml`
-  - ローカル `video` + `image` の render smoke 用
-- `fixtures/generated/project.yaml`
-  - generated / video / image 混在の plan / dry-run 用
-- `fixtures/legacy/spokesperson.yaml`
-  - 旧フォーマット互換テスト用
+- `fixtures/basic/project.yaml`: local `video` + `image` render smoke test
+- `fixtures/generated/project.yaml`: mixed generated / video / image plan and dry-run fixture
+- `fixtures/legacy/spokesperson.yaml`: legacy-format compatibility fixture
 
 ```bash
 cd remotion
