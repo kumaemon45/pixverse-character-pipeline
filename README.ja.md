@@ -112,6 +112,15 @@ BGM は assets/bgm.mp3 を使ってください。
 4. 各ビートを `source: reference` として `project.yaml` に書く
 5. 最後に `./bin/pipeline run` で reference 生成から BGM / テロップ込みの最終 render まで進める
 
+キャラ画像が添付されたときの既定動作:
+
+1. 複数画像でも既定では `speaker.mode: single` として扱う
+2. `generation.model: v6` を維持する
+3. `generation.image.enabled: true` を維持する
+4. `generation.image.model` の既定値は `gemini-3.1-flash`
+5. PixVerse の I2I (`create image`) でベース静止画を作ってから、I2V (`create video --image`) を実行する
+6. ユーザーが明示的に story / teaser / trailer / multi-cut を要求した場合、または複数の参照画像を渡した場合を除き、`source: reference` や `pixverse create reference` に切り替えない
+
 シェルの Node / PATH 解決が不安定な環境では、`pnpm pipeline:*` ではなく `./bin/pipeline` を正式入口として使います。
 
 ## 依頼から実行までの例

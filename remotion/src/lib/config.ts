@@ -229,12 +229,7 @@ const normalizeProjectConfig = (raw: Record<string, unknown>, configDir: string)
   const speakerImages = asStringArray(speakerRaw.images).map((imagePath) =>
     resolvePathFromConfig(configDir, imagePath),
   );
-  const mode =
-    asString(speakerRaw.mode) === "reference"
-      ? "reference"
-      : speakerImages.length > 1
-        ? "reference"
-        : "single";
+  const mode = asString(speakerRaw.mode) === "reference" ? "reference" : "single";
 
   const aspectRatios = asStringArray(renderRaw.aspectRatios).filter((ratio): ratio is SupportedAspectRatio =>
     SUPPORTED_ASPECT_RATIOS.includes(ratio as SupportedAspectRatio),
@@ -390,9 +385,7 @@ const normalizeLegacyConfig = (raw: Record<string, unknown>, configDir: string):
       mode:
         asString(speakerRaw.mode) === "reference"
           ? "reference"
-          : speakerImages.length > 1
-            ? "reference"
-            : "single",
+          : "single",
       name:
         asString(speakerRaw.name) ??
         basename(speakerImages[0] ?? "speaker", extname(speakerImages[0] ?? "")),
@@ -409,8 +402,8 @@ export const validateProjectConfig = (config: ProjectConfig): void => {
     throw new Error("speaker.images must contain between 1 and 7 paths.");
   }
 
-  if (config.speaker.mode === "single" && config.speaker.images.length !== 1) {
-    throw new Error("speaker.mode=single requires exactly one image.");
+  if (config.speaker.mode === "single" && config.speaker.images.length < 1) {
+    throw new Error("speaker.mode=single requires at least one image.");
   }
 
   if (config.speaker.mode === "reference" && config.speaker.images.length < 2) {

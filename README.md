@@ -77,6 +77,15 @@ Default behavior for story / teaser / trailer requests:
 4. Write those beats as `source: reference` clips in `project.yaml`
 5. Use `./bin/pipeline run` to do reference generation, BGM / caption staging, and final render
 
+Default behavior for attached character image(s):
+
+1. Treat it as `speaker.mode: single` by default, even when multiple images are attached
+2. Keep `generation.model: v6`
+3. Keep `generation.image.enabled: true`
+4. Default `generation.image.model` to `gemini-3.1-flash`
+5. Start from PixVerse I2I (`create image`) and then run I2V (`create video --image`)
+6. Do not switch to `source: reference` or `pixverse create reference` unless the user explicitly asks for a story / teaser / trailer / multi-cut workflow or provides multiple reference images
+
 ## Setup
 
 ### 1. PixVerse CLI

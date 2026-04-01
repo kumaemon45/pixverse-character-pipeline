@@ -37,6 +37,7 @@ metadata:
 
 ## Critical Rules
 
+0. **添付キャラ画像は既定で `single` として扱う** — 画像が 1 枚でも複数枚でも、まず `generation.image.model: gemini-3.1-flash` の I2I → `generation.model: v6` の I2V を使う。明示的な story / teaser / trailer / multi-cut 指示がない限り `reference` へ寄せない
 1. **3面図は必ず最初に作る** — キャラ一貫性の土台。複数カットに進む前に必須（Mode A）
 2. **画像生成は PixVerse `create image` を使う** — 3面図もカット画像も `--image` / `--images` の I2I で作る。`generation.image.model` には PixVerse CLI の image model を指定する
 3. **動画生成は I2V を優先** — 単一画像フローでは合成画像を `create video --image` に渡す。T2V はキャラ一貫性が崩れやすい
@@ -244,7 +245,7 @@ generation:
     base: A talking character derived from the provided character image, speaking directly to camera in a photoreal live-action environment with realistic depth and polished cinematic lighting
 ```
 
-既定では `generation.image.enabled: true` で、PixVerse `create image` を使ってベース静止画を作ってから I2V に渡す。`generation.image.model` は PixVerse CLI の image model 名で、既定値は `gemini-3.1-flash`。`qwen-image` や `seedream-5.0-lite` なども指定できる。`generation.image.prompt` が未指定なら `generation.prompt` を使う。動画生成の既定は `v6` / `720p`。
+既定では `generation.image.enabled: true` で、PixVerse `create image` を使ってベース静止画を作ってから I2V に渡す。添付画像が 1 枚でも複数枚でもこのフローを優先し、`generation.model` は `v6` を維持する。`generation.image.model` は PixVerse CLI の image model 名で、既定値は `gemini-3.1-flash`。`qwen-image` や `seedream-5.0-lite` なども指定できる。`generation.image.prompt` が未指定なら `generation.prompt` を使う。
 
 `project.yaml` がない場合 → `references/interactive-questions.md` のフローでヒアリング。
 
@@ -253,6 +254,7 @@ generation:
 - `source: generated` — requires `text` or `audioFile`; pipeline runs direct I2V or `create image` → I2V before PixVerse `create speech`
 - `source: video` — requires `asset`, uses local file in Remotion
 - `source: image` — requires `asset`, renders as still/endcard
+- `source: reference` — only use when the user explicitly wants story / teaser / trailer / multi-cut behavior
 
 Optional: `overlayText`, `overlayStyle`, `ttsSpeaker`, `hasAudio`
 
@@ -260,7 +262,7 @@ Optional: `overlayText`, `overlayStyle`, `ttsSpeaker`, `hasAudio`
 
 ## Mode C: Reference Story Workflow
 
-ストーリー型の依頼では、キャラを各カットで直接リファレンスしながら別シーンを個別生成し、`source: reference` クリップとして pipeline に流す。
+ストーリー型の依頼では、キャラを各カットで直接リファレンスしながら別シーンを個別生成し、`source: reference` クリップとして pipeline に流す。1 枚でも複数枚でも使えるが、既定動作にはせず、story / teaser / trailer / multi-cut の明示指示がある場合に限る。
 
 ```
 キャラ画像 (1-7枚)
@@ -308,8 +310,8 @@ pixverse create reference \
 注意:
 - `pixverse create reference --images` は 1-7 枚で使える
 - ただし pipeline config の `speaker.mode=reference` は 2-7 枚必須
-- 画像が1枚なら `speaker.mode: single` のまま `source: reference` クリップを使ってよい
-- 画像が2枚以上なら `speaker.mode: reference` にしてもよい
+- 画像が1枚でも複数枚でも、明示的に story / teaser / trailer / multi-cut を求められた場合だけ `source: reference` を使う
+- `speaker.mode: reference` を使うのは、reference-driven workflow を明示したい場合だけ
 
 ### Final Timeline Config Pattern
 

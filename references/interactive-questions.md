@@ -2,6 +2,12 @@
 
 When `project.yaml` is not provided, collect inputs in this order and convert them into the neutral schema. Do not start generation during Q&A.
 
+Default unless the user clearly asks otherwise:
+- one or more attached character images => `speaker.mode: single`
+- use PixVerse I2I first with `generation.image.model: gemini-3.1-flash`
+- keep `generation.model: v6`
+- do not switch to `reference` mode only because an image was attached
+
 If the user asks for a story, teaser, trailer, or multi-cut video, default to a reference-driven per-cut workflow:
 - draft 3-5 story beats first
 - generate each beat as its own reference clip
@@ -24,7 +30,7 @@ If the user asks for a story, teaser, trailer, or multi-cut video, default to a 
 
 **Extract**
 - `speaker.images`
-- `speaker.mode`
+- `speaker.mode` — default to `single` for 1-7 images, and do not override it to `reference` unless the user explicitly wants reference-driven generation
 - `speaker.name`
 
 ## Group 3: Locales

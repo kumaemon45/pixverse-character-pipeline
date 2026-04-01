@@ -103,8 +103,9 @@ export const createBaseImage = async (
   aspectRatio: SupportedAspectRatio,
 ): Promise<string> => {
   const prompt = resolvePrompt(config.generation.image.prompt, aspectRatio);
+  const useMultipleImages = config.speaker.images.length > 1;
   const args =
-    config.speaker.mode === "reference"
+    useMultipleImages
       ? [
           "create",
           "image",
