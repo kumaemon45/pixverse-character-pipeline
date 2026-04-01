@@ -88,6 +88,13 @@ Default behavior for attached character image(s):
 
 ## Setup
 
+### 0. Clone the Repository
+
+```bash
+git clone https://github.com/Takamasa045/pixverse-character-pipeline.git
+cd pixverse-character-pipeline
+```
+
 ### 1. PixVerse CLI
 
 Prerequisites:
